@@ -1,0 +1,24 @@
+{
+  "name": "wasm-webcam-filter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  },
+  "scripts": {
+    "start": "http-server ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jkumara/wasm-webcam-filter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jkumara/wasm-webcam-filter/issues"
+  },
+  "homepage": "https://github.com/jkumara/wasm-webcam-filter#readme"
+}

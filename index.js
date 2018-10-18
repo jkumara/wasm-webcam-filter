@@ -87,20 +87,19 @@ const filterWebcam = (videoElement, canvasElement, context, wam) => {
   context.putImageData(filteredImageData, 0, 0);
 };
 
-let wam;
-loadWasm().then(module => (wam = module));
+loadWasm().then(wam => {
+  const videoElement = document.querySelector("video");
 
-const videoElement = document.querySelector("video");
-
-videoElement.addEventListener("play", () => {
-  const canvasElement = document.querySelector("canvas");
-  const context = canvasElement.getContext("2d");
-
-  const draw = () => {
-    if (videoElement.paused) return false;
-    filterWebcam(videoElement, canvasElement, context, wam);
-    requestAnimationFrame(draw);
-  };
-
-  draw();
+  videoElement.addEventListener("play", () => {
+    const canvasElement = document.querySelector("canvas");
+    const context = canvasElement.getContext("2d");
+  
+    const draw = () => {
+      if (videoElement.paused) return false;
+      filterWebcam(videoElement, canvasElement, context, wam);
+      requestAnimationFrame(draw);
+    };
+  
+    draw();
+  });
 });

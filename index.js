@@ -60,7 +60,7 @@ const filterImage = (memory, grayscale, imageData) => {
   }
 
   // Create a TypedArray and use it to set the pixel data to the WASM memory
-  const moduleMemory = new Uint8ClampedArray(memory.buffer);
+  const moduleMemory = new Uint8ClampedArray(memory.buffer, 0, pixelData.byteLength);
   moduleMemory.set(pixelData);
 
   // With the pixel data in the WASM memory, we can now grayscale it

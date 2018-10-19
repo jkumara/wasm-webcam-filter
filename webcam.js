@@ -1,4 +1,4 @@
-const setupWebCam = () =>
+const setupWebcam = () =>
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: false })
     .catch(console.error);
@@ -10,11 +10,9 @@ const streamToVideo = (stream, videoElement) => {
 const togglePlayPause = videoElement =>
   !videoElement.paused ? videoElement.pause() : videoElement.play();
 
-const toggleWebCam = async () => {
-  const videoElement = document.querySelector("video");
-
+const toggleWebcam = async videoElement => {
   if (!videoElement.srcObject) {
-    const stream = await setupWebCam();
+    const stream = await setupWebcam();
     streamToVideo(stream, videoElement);
     return videoElement.play();
   }

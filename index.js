@@ -60,7 +60,11 @@ const filterImage = (memory, grayscale, imageData) => {
   }
 
   // Create a TypedArray and use it to set the pixel data to the WASM memory
-  const moduleMemory = new Uint8ClampedArray(memory.buffer, 0, pixelData.byteLength);
+  const moduleMemory = new Uint8ClampedArray(
+    memory.buffer,
+    0,
+    pixelData.byteLength
+  );
   moduleMemory.set(pixelData);
 
   // With the pixel data in the WASM memory, we can now grayscale it
@@ -72,7 +76,8 @@ const filterImage = (memory, grayscale, imageData) => {
   return new ImageData(filteredPixelData, width, height);
 };
 
-const filterWebcam = (videoElement, canvasElement, context, wam) => {
+const filterVideo = (videoElement, canvasElement, wam) => {
+  const context = canvasElement.getContext("2d");
   const width = videoElement.videoWidth || 640;
   const height = videoElement.videoHeight || 480;
 
@@ -87,19 +92,30 @@ const filterWebcam = (videoElement, canvasElement, context, wam) => {
   context.putImageData(filteredImageData, 0, 0);
 };
 
-loadWasm().then(wam => {
-  const videoElement = document.querySelector("video");
+const drawVideoToCanvas = async (videoElement, canvasElement) => {
+  const wam = await loadWasm();
 
-  videoElement.addEventListener("play", () => {
-    const canvasElement = document.querySelector("canvas");
-    const context = canvasElement.getContext("2d");
-  
+  return videoElement.addEventListener("play", () => {
     const draw = () => {
       if (videoElement.paused) return false;
-      filterWebcam(videoElement, canvasElement, context, wam);
+
+      filterVideo(videoElement, canvasElement, wam);
       requestAnimationFrame(draw);
     };
-  
+
     draw();
   });
-});
+};
+
+const main = _document => {
+  const videoElement = _document.createElement("video");
+  const canvasElement = _document.querySelector("canvas");
+
+  drawVideoToCanvas(videoElement, canvasElement);
+
+  const toggleVideo = () => toggleWebcam(videoElement);
+
+  return { toggleVideo };
+};
+
+const { toggleVideo } = main(document);

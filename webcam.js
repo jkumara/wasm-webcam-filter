@@ -8,7 +8,7 @@ const streamToVideo = (stream, videoElement) => {
 };
 
 const togglePlayPause = videoElement =>
-  !videoElement.paused ? videoElement.pause() : videoElement.play();
+  videoElement.paused ? videoElement.play() : videoElement.pause();
 
 const toggleWebcam = async videoElement => {
   if (!videoElement.srcObject) {

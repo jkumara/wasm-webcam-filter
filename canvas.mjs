@@ -1,5 +1,3 @@
-import { filterImage, filterImage2 } from "./image-filter.mjs";
-
 const videoToCanvas = (videoElement, canvasElement) => {
   const context = canvasElement.getContext("2d");
   const width = videoElement.videoWidth || 640;
@@ -11,7 +9,7 @@ const videoToCanvas = (videoElement, canvasElement) => {
   context.drawImage(videoElement, 0, 0);
 };
 
-const filterCanvas = (canvasElement, memory, filter) => {
+const filterCanvas = (canvasElement, filter) => {
   const context = canvasElement.getContext("2d");
   const imageData = context.getImageData(
     0,
@@ -19,17 +17,17 @@ const filterCanvas = (canvasElement, memory, filter) => {
     canvasElement.width,
     canvasElement.height
   );
-  const filteredImageData = filterImage(memory, filter, imageData);
+  const filteredImageData = filter(imageData);
 
   context.putImageData(filteredImageData, 0, 0);
 };
 
-export const drawVideoToCanvas = (videoElement, canvasElement, memory, filter) => {
+export const drawVideoToCanvas = (videoElement, canvasElement, filter) => {
   return videoElement.addEventListener("play", () => {
     const draw = () => {
       if (videoElement.paused) return false;
       videoToCanvas(videoElement, canvasElement);
-      filterCanvas(canvasElement, memory, filter);
+      filterCanvas(canvasElement, filter);
       requestAnimationFrame(draw);
     };
 

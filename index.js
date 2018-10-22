@@ -1,5 +1,6 @@
 import { drawVideoToCanvas } from "./canvas.mjs";
-import { toggleWebcam } from "./webcam.js";
+import { toggleWebcam } from "./webcam.mjs";
+import { filterImage, filterImage2 } from "./image-filter.mjs";
 
 /**
  * Instantiates a WASM-module with its own memory
@@ -36,11 +37,15 @@ const loadWasmModule = async path => {
   };
 };
 
-var Module = typeof Module !== "undefined" ? Module : {};
+const loadWasm = async () => {
+  return await loadWasmModule("./dist/filter.wasm");
+};
+
+window.Module = typeof window.Module !== "undefined" ? window.Module : {};
 
 const loadWasm2 = () => {
   return new Promise(resolve => {
-    Module.onRuntimeInitialized = () =>
+    window.Module.onRuntimeInitialized = () =>
       resolve({
         memory: HEAPU8,
         wam: Module.asm
@@ -52,21 +57,21 @@ const loadWasm2 = () => {
   });
 };
 
-const loadWasm = async () => {
-  return await loadWasmModule("./dist/filter.wasm");
-};
-
 const main = _document => {
   const videoElement = _document.createElement("video");
   const canvasElement = _document.querySelector("canvas");
 
-  loadWasm().then(wam => {
-    drawVideoToCanvas(videoElement, canvasElement, wam.memory, wam._grayscale);
-  });
-
-  // loadWasm2().then(({ memory, wam }) => {
-  //   drawVideoToCanvas(videoElement, canvasElement, memory, wam._grayscale);
+  // hand-made version
+  // loadWasm().then(wam => {
+  //   const filter = filterImage(wam.memory, wam._grayscale);
+  //   drawVideoToCanvas(videoElement, canvasElement, filter);
   // });
+
+  // emscripten version
+  loadWasm2().then(({ memory, wam }) => {
+    const filter = filterImage2(memory, wam._grayscale);
+    drawVideoToCanvas(videoElement, canvasElement, filter);
+  });
 
   const toggleVideo = () => toggleWebcam(videoElement);
 

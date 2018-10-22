@@ -1,9 +1,8 @@
 // A WASM memory page has a constant size of 64 KiB
 const MEMORY_PAGE_BYTES = 1024 * 64;
 
-export const filterImage = (memory, grayscale, imageData) => {
+export const filterImage = (memory, filter) => imageData => {
   const { data: pixelData, height, width } = imageData;
-
 
   // Calculate how much memory we have available
   const currentMemoryAmount = memory.buffer.byteLength / MEMORY_PAGE_BYTES;
@@ -26,7 +25,7 @@ export const filterImage = (memory, grayscale, imageData) => {
   moduleMemory.set(pixelData);
 
   // With the pixel data in the WASM memory, we can now grayscale it
-  grayscale(moduleMemory, width, height);
+  filter(moduleMemory, width, height);
 
   // Read the grayscaled image from the memory
   const filteredPixelData = moduleMemory.subarray(0, pixelData.byteLength);
@@ -34,18 +33,16 @@ export const filterImage = (memory, grayscale, imageData) => {
   return new ImageData(filteredPixelData, width, height);
 };
 
-
-/**
- * Applies a grayscale-filter to an image
- * @param {ImageData} imageData
- */
-export const filterImage2 = (memory, grayscale, imageData) => {
-  const {data: pixelData, height, width} = imageData;
+export const filterImage2 = (memory, filter) => imageData => {
+  const { data: pixelData, height, width } = imageData;
 
   const memoryLocation = _malloc(pixelData.length);
   memory.set(pixelData, memoryLocation);
-  grayscale(memoryLocation, width, height);
-  const filteredPixelData = memory.subarray(memoryLocation, memoryLocation + pixelData.length);
+  filter(memoryLocation, width, height);
+  const filteredPixelData = memory.subarray(
+    memoryLocation,
+    memoryLocation + pixelData.length
+  );
   _free(memoryLocation);
 
   return new ImageData(new Uint8ClampedArray(filteredPixelData), width, height);

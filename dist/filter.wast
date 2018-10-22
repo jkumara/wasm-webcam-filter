@@ -3,11 +3,9 @@
  (import "env" "memoryBase" (global $memoryBase i32))
  (global $STACKTOP (mut i32) (i32.const 0))
  (global $STACK_MAX (mut i32) (i32.const 0))
- (global $fp$_grayscale i32 (i32.const 1))
  (export "__post_instantiate" (func $__post_instantiate))
  (export "_grayscale" (func $_grayscale))
- (export "fp$_grayscale" (global $fp$_grayscale))
- (func $_grayscale (; 0 ;) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $_grayscale (; 0 ;) (; has Stack IR ;) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (set_local $2
    (i32.mul
@@ -66,10 +64,10 @@
    )
   )
  )
- (func $runPostSets (; 1 ;)
+ (func $runPostSets (; 1 ;) (; has Stack IR ;)
   (nop)
  )
- (func $__post_instantiate (; 2 ;)
+ (func $__post_instantiate (; 2 ;) (; has Stack IR ;)
   (set_global $STACKTOP
    (get_global $memoryBase)
   )

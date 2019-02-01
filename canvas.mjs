@@ -23,14 +23,12 @@ const filterCanvas = (canvasElement, filter) => {
 };
 
 export const drawVideoToCanvas = (videoElement, canvasElement, filter) => {
-  return videoElement.addEventListener("play", () => {
-    const draw = () => {
-      if (videoElement.paused) return false;
-      videoToCanvas(videoElement, canvasElement);
-      filterCanvas(canvasElement, filter);
-      requestAnimationFrame(draw);
-    };
+  const draw = () => {
+    if (videoElement.paused) return false;
+    videoToCanvas(videoElement, canvasElement);
+    filterCanvas(canvasElement, filter);
+    requestAnimationFrame(draw);
+  };
 
-    draw();
-  });
+  return videoElement.addEventListener("play", draw);
 };

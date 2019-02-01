@@ -37,13 +37,12 @@ const loadWasmModule = async path => {
   };
 };
 
-const loadWasm = async () => {
+const loadWasmManually = async () => {
   return await loadWasmModule("./dist/filter.wasm");
 };
 
-window.Module = typeof window.Module !== "undefined" ? window.Module : {};
-
-const loadWasm2 = () => {
+const loadWasmWithEmscripten = () => {
+  window.Module = typeof window.Module !== "undefined" ? window.Module : {};
   return new Promise(resolve => {
     window.Module.onRuntimeInitialized = () =>
       resolve({
@@ -57,27 +56,35 @@ const loadWasm2 = () => {
   });
 };
 
+const loadWasmAndFilterVideo = async (videoElement, canvasElement, wasmLoadStyle) => {
+  if (wasmLoadStyle === LOAD_WASM_MANUALLY) {
+    const wam = await loadWasmManually();
+    const filter = filterImage(wam.memory, wam._grayscale);
+    drawVideoToCanvas(videoElement, canvasElement, filter);
+  }
+
+  if (wasmLoadStyle === LOAD_WASM_WITH_EMSCRIPTEN) {
+    const { memory, wam } = await loadWasmWithEmscripten();
+    const filter = filterImage2(memory, wam._grayscale);
+    drawVideoToCanvas(videoElement, canvasElement, filter);
+  }
+};
+
 const main = _document => {
   const videoElement = _document.createElement("video");
   const canvasElement = _document.querySelector("canvas");
 
-  // hand-made version
-  // loadWasm().then(wam => {
-  //   const filter = filterImage(wam.memory, wam._grayscale);
-  //   drawVideoToCanvas(videoElement, canvasElement, filter);
-  // });
-
-  // emscripten version
-  loadWasm2().then(({ memory, wam }) => {
-    const filter = filterImage2(memory, wam._grayscale);
-    drawVideoToCanvas(videoElement, canvasElement, filter);
-  });
+  loadWasmAndFilterVideo(videoElement, canvasElement, LOAD_WASM_MANUALLY);
 
   const toggleVideo = () => toggleWebcam(videoElement);
 
   return { toggleVideo };
 };
 
+const LOAD_WASM_WITH_EMSCRIPTEN = 'LOAD_WASM_WITH_EMSCRIPTEN';
+const LOAD_WASM_MANUALLY = 'LOAD_WASM_MANUALLY';
+
 const { toggleVideo } = main(document);
 
+// Expose function to be used in the view
 window.toggleVideo = toggleVideo;

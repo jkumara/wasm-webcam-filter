@@ -3,7 +3,6 @@ import { toggleWebcam } from "./webcam.mjs";
 
 const loadWasmModule = async () => {
   // Create memory and instantiate the filter.wasm here
-
   // Return the instantiated module and the memory
   return {};
 };
